@@ -1,5 +1,5 @@
 {
-    "name": "laravel-notification-channels/twilio",
+    "name": "atyantik/twilio",
     "description": "A boilerplate for contributions.",
     "homepage": "https://github.com/laravel-notification-channels/twilio",
     "license": "MIT",
