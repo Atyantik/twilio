@@ -55,11 +55,12 @@ class Twilio
 
     protected function sendSmsMessage($message, $to)
     {
+
         return $this->twilioService->messages->create(
             $to,
             [
                 'from' => $this->getFrom($message),
-                'body' => $message
+                'body' => $message->content
             ]);
     }
 
@@ -78,7 +79,7 @@ class Twilio
             $to,
             [
                 'from' => $this->getFrom($message),
-                'body' => $message
+                'body' => $message->content
             ]);
     }
 }
