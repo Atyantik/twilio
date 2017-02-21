@@ -3,7 +3,7 @@
 namespace NotificationChannels\Twilio;
 
 use NotificationChannels\Twilio\Exceptions\CouldNotSendNotification;
-use Services_Twilio as TwilioService;
+use Twilio\Rest\Client as TwilioService;
 
 class Twilio
 {
@@ -14,6 +14,7 @@ class Twilio
 
     /**
      * Default 'from' from config.
+     *
      * @var string
      */
     protected $from;
@@ -21,8 +22,8 @@ class Twilio
     /**
      * Twilio constructor.
      *
-     * @param  TwilioService  $twilioService
-     * @param  string  $from
+     * @param  TwilioService $twilioService
+     * @param  string        $from
      */
     public function __construct(TwilioService $twilioService, $from)
     {
@@ -33,8 +34,9 @@ class Twilio
     /**
      * Send a TwilioMessage to the a phone number.
      *
-     * @param  TwilioMessage  $message
-     * @param  $to
+     * @param  TwilioMessage $message
+     * @param                $to
+     *
      * @return mixed
      * @throws CouldNotSendNotification
      */
@@ -53,28 +55,30 @@ class Twilio
 
     protected function sendSmsMessage($message, $to)
     {
-        return $this->twilioService->account->messages->sendMessage(
-            $this->getFrom($message),
+        return $this->twilioService->messages->create(
             $to,
-            trim($message->content)
-        );
-    }
-
-    protected function makeCall($message, $to)
-    {
-        return $this->twilioService->account->calls->create(
-            $this->getFrom($message),
-            $to,
-            trim($message->content)
-        );
+            [
+                'from' => $this->getFrom($message),
+                'body' => $message
+            ]);
     }
 
     protected function getFrom($message)
     {
-        if (! $from = $message->from ?: $this->from) {
+        if (!$from = $message->from ?: $this->from) {
             throw CouldNotSendNotification::missingFrom();
         }
 
         return $from;
+    }
+
+    protected function makeCall($message, $to)
+    {
+        return $this->twilioService->calls->create(
+            $to,
+            [
+                'from' => $this->getFrom($message),
+                'body' => $message
+            ]);
     }
 }
